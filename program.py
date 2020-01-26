@@ -14,9 +14,10 @@ def main():
         return
 
     matches = search_folders(folder, text)
-
+    match_count = 0
     for match in matches:
-        print(match)
+        match_count += 1
+    print(match_count )
 
 
 def search_app_welcome():
@@ -42,33 +43,23 @@ def get_text_from_user():
 
 
 def search_folders(folder, text):
-    all_matches = []
     items = os.listdir(folder)
 
     for item in items:
         full_item = os.path.join(folder, item)
         if os.path.isdir(full_item):
-            matches = search_folders(full_item, text)
-            all_matches.extend(matches)
+            yield from search_folders(full_item, text)
         else:
-            matches = search_file(full_item, text)
-            all_matches.extend(matches)
+            yield from search_file(full_item, text)
 
-    return all_matches
 
 
 def search_file(filename, search_text):
-    matches = []
     with open(filename, 'r', encoding='utf-8') as fin:
 
-        line_num = 0
         for line in fin:
-            line_num += 1
             if line.lower().find(search_text) >= 0:
-                m = search_folders()
-                matches.append(line)
-
-        return matches
+                yield line
 
 
 if __name__ == "__main__":
